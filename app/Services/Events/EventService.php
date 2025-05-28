@@ -4,6 +4,7 @@ namespace App\Services\Events;
 
 use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
+use App\Http\Resources\EventResource;
 use App\Models\Event;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
@@ -121,5 +122,13 @@ class EventService
         Gate::authorize('userOwnsEvent', $event);
 
         return $event;
+    }
+
+    public function publishEvent(Event $event, Request $request)
+    {
+        $event->is_published = true;
+        $event->save();
+
+        return $this->success('Event published', (new EventResource($event))->toArray($request));
     }
 }

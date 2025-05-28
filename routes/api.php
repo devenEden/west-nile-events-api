@@ -11,22 +11,23 @@ Route::group(['middleware' => 'auth:sanctum', 'prefix' => 'events'], function ()
     Route::post('my-events/upload-image/{event_id}', [EventController::class, 'uploadImage']);
     Route::get('my-events/purchases/{event_id}', [EventController::class, 'getEventTicketPurchases'])->name('my_events.purchases');
     Route::get('my-events/statistics/{event_id}', [EventController::class, 'getEventTicketStatistics'])->name('my_events.purchases');
+    Route::patch('my-events/publish/{event_id}', [EventController::class, 'publishEvent'])->name('my_events.publish');
 
     Route::apiResource('', EventController::class)->parameters(['' => 'event']);
 
     Route::group(['prefix' => 'tickets'], function () {
+        Route::get('/verify/{ticket_reference}', [TicketPurchaseController::class, 'verifyTicket'])->name('tickets.verify');
         Route::apiResource('', TicketController::class)->parameters(['' => 'ticket']);
     });
 });
 
 Route::group(['prefix' => 'tickets'], function () {
     Route::post('/purchase', [TicketPurchaseController::class, 'store'])->name('tickets.purchase');
-    Route::get('/verify/{ticket_reference}', [TicketPurchaseController::class, 'verifyTicket'])->name('tickets.verify');
 });
 
 Route::group(['prefix' => 'public-events'], function () {
-    Route::get('', [EventController::class, 'getPassedEvents'])->name('events.public');
-    Route::get('/passed', [EventController::class, 'index'])->name('events.public');
+    Route::get('', [EventController::class, 'index'])->name('events.public');
+    Route::get('/passed', [EventController::class, 'getPassedEvents'])->name('events.public');
     Route::get('/{id}', [EventController::class, 'show'])->name('events.public.show');
 });
 
