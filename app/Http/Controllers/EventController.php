@@ -32,7 +32,7 @@ class EventController extends Controller
     public function index(Request $request)
     {
         //
-        $events = Event::where('date', '>', Carbon::today())->get();
+        $events = Event::where('date', '>', Carbon::today())->where('is_published', true)->get();
         return  $this->success('Events fetched successfully', EventResource::collection($events)->toArray($request));
     }
 
@@ -94,7 +94,7 @@ class EventController extends Controller
 
     public function getPassedEvents(Request $request)
     {
-        $events = Event::where('date', '<', Carbon::today())->get();
+        $events = Event::where('date', '<', Carbon::today())->where('is_published', true)->get();
         return  $this->success('Events fetched successfully', EventResource::collection($events)->toArray($request));
     }
 
@@ -121,5 +121,12 @@ class EventController extends Controller
         $event = $this->eventService->verifyUserOwnsEvent($request);
 
         return $this->eventService->uploadImage($event, $request);
+    }
+
+    public function publishEvent(Request $request)
+    {
+        $event = $this->eventService->verifyUserOwnsEvent($request);
+
+        return $this->eventService->publishEvent($event, $request);
     }
 }

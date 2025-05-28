@@ -35,6 +35,10 @@ class TicketPurchaseService
                 return $this->badRequest('The event date has already passed');
             }
 
+            if (!$event->is_published) {
+                return $this->badRequest('The event is not yet published');
+            }
+
             $ticketPurchase = TicketPurchase::create([
                 'event_id' => $event->id,
                 'email' => $request->email,
@@ -148,7 +152,7 @@ class TicketPurchaseService
                     'file_path' =>  $fileName,
                     'ticket_reference' => $ticketReference,
                 ];
-                $appPath = config('app.url') . '/api/tickets/verify/' . $ticketReference;
+                $appPath = config('app.url') . '/api/events/tickets/verify/' . $ticketReference;
                 $qrCode = base64_encode(QrCode::size(80)->style('round')->generate($appPath));
 
                 Pdf::loadView('tickets.ticket', ['ticket' => $ticketsData, 'qrCode' => $qrCode])
